@@ -221,7 +221,7 @@ export function LifeCalendar() {
                     "hover:bg-accent hover:border-accent"
                   );
                   const style = isMounted && week.isLived
-                                ? { animationDelay: `${(Math.pow(index / (weeksLived || 1), 2) * 1.5).toFixed(4)}s` }
+                                ? { animationDelay: `${(Math.pow(index / (weeksLived || 1), 1.7) * 1.5).toFixed(4)}s` }
                                 : {};
                   const ariaLabel = `Week ${week.weekNumber}, ${week.isLived ? 'Lived' : 'Remaining'}`;
                   

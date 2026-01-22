@@ -96,7 +96,7 @@ export default {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'grow-in': 'grow-in 0.4s ease-out forwards',
+        'grow-in': 'grow-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards',
       },
     },
   },
