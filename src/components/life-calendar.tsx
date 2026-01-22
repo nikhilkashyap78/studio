@@ -14,14 +14,12 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, Share2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 
 export function LifeCalendar() {
   const [age, setAge] = useState(25);
   const [lifespan, setLifespan] = useState(90);
   const [isMounted, setIsMounted] = useState(false);
-  const [isBrutal, setIsBrutal] = useState(false);
   const { toast } = useToast();
   const printableRef = useRef<HTMLDivElement>(null);
   const [isSharing, setIsSharing] = useState(false);
@@ -200,21 +198,6 @@ export function LifeCalendar() {
           </CardContent>
         </Card>
 
-        <Card className="w-full max-w-md mx-auto mt-8 bg-card/80 backdrop-blur-sm border-primary/20 shadow-lg">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-primary">Copy Mode</CardTitle>
-            <CardDescription>
-              Switch between soft and brutal reminders.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center space-x-2 pt-2">
-              <Switch id="brutal-mode" checked={isBrutal} onCheckedChange={setIsBrutal} />
-              <Label htmlFor="brutal-mode" className="text-sm font-normal leading-none cursor-pointer">Enable Brutal Copy</Label>
-            </div>
-          </CardContent>
-        </Card>
-
         {weeks.length > 0 && (
           <div className="mt-8 sm:mt-12 w-full flex justify-center">
             <div className="w-full overflow-x-auto pb-4">
@@ -249,9 +232,7 @@ export function LifeCalendar() {
           </div>
         )}
         <p className="mt-8 sm:mt-12 text-sm text-muted-foreground text-center">
-          {isBrutal
-            ? `You've already spent ${weeksLived.toLocaleString()} weekends. ${totalWeeks > weeksLived ? `You may only have ${(totalWeeks - weeksLived).toLocaleString()} left.` : 'Make them count.'}`
-            : "Every box is one week you’ll never get back."}
+          {`You've already spent ${weeksLived.toLocaleString()} weekends. ${totalWeeks > weeksLived ? `You may only have ${(totalWeeks - weeksLived).toLocaleString()} left.` : 'Make them count.'}`}
         </p>
       </div>
 
