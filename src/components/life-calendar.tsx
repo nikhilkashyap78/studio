@@ -62,8 +62,6 @@ export function LifeCalendar() {
     }
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 100));
-
       const dataUrl = await toPng(printableRef.current, {
         cacheBust: true,
         backgroundColor: window.getComputedStyle(document.body).backgroundColor,
@@ -88,12 +86,18 @@ export function LifeCalendar() {
         document.body.removeChild(link);
       }
     } catch (error) {
-      console.error("Could not share calendar", error);
-      toast({
-        variant: "destructive",
-        title: "Sharing failed",
-        description: "Could not generate or share your calendar image.",
-      });
+      // Don't show an error toast if the user simply canceled the share dialog,
+      // or if there was a gesture-related issue.
+      if (error instanceof Error && (error.name === 'AbortError' || error.name === 'NotAllowedError')) {
+         console.error("Could not share calendar (share operation not allowed or cancelled):", error);
+      } else {
+        console.error("Could not share calendar", error);
+        toast({
+          variant: "destructive",
+          title: "Sharing failed",
+          description: "Could not generate or share your calendar image.",
+        });
+      }
     } finally {
       if (ageInputWrapper) {
         ageInputWrapper.style.filter = "";
@@ -221,7 +225,7 @@ export function LifeCalendar() {
                     "hover:bg-accent hover:border-accent"
                   );
                   const style = isMounted && week.isLived
-                                ? { animationDelay: `${(Math.pow(index / (weeksLived || 1), 2) * 1.5).toFixed(4)}s` }
+                                ? { animationDelay: `${(index / (weeksLived || 1) * 0.8).toFixed(4)}s` }
                                 : {};
                   const ariaLabel = `Week ${week.weekNumber}, ${week.isLived ? 'Lived' : 'Remaining'}`;
                   
