@@ -13,11 +13,24 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function LifeCalendar() {
   const [age, setAge] = useState(25);
   const [lifespan, setLifespan] = useState(90);
   const [isMounted, setIsMounted] = useState(false);
+  const [showMilestones, setShowMilestones] = useState({
+    birth: true,
+    eighteen: true,
+    graduation: true,
+    today: true,
+  });
 
   useEffect(() => {
     setIsMounted(true);
@@ -27,9 +40,11 @@ export function LifeCalendar() {
   const totalWeeks = useMemo(() => Math.floor(lifespan * 52), [lifespan]);
 
   const weeks = useMemo(() => {
-    if (totalWeeks <= 0) return [];
-    return Array.from({ length: totalWeeks }, (_, i) => ({
+    if (totalWeeks <= 0 && weeksLived <= 0) return [];
+    const displayWeeks = Math.max(totalWeeks, weeksLived);
+    return Array.from({ length: displayWeeks }, (_, i) => ({
       isLived: i < weeksLived,
+      isBeyondLifespan: i >= totalWeeks,
       weekNumber: i + 1,
     }));
   }, [totalWeeks, weeksLived]);
@@ -40,6 +55,15 @@ export function LifeCalendar() {
 
   const handleLifespanChange = (amount: number) => {
     setLifespan((prev) => Math.max(0, prev + amount));
+  };
+
+  const getMilestoneText = (weekNumber: number) => {
+    const milestones = [];
+    if (showMilestones.birth && weekNumber === 1) milestones.push("Birth");
+    if (showMilestones.eighteen && weekNumber === 18 * 52) milestones.push("18th Birthday");
+    if (showMilestones.graduation && weekNumber === 22 * 52) milestones.push("Graduation (age 22)");
+    if (showMilestones.today && weekNumber === weeksLived) milestones.push("Today");
+    return milestones.join(', ');
   };
 
   return (
@@ -127,8 +151,37 @@ export function LifeCalendar() {
         </CardContent>
       </Card>
 
+      <Card className="w-full max-w-md mx-auto mt-8 bg-card/80 backdrop-blur-sm border-primary/20 shadow-lg">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-primary">Personal Milestones</CardTitle>
+          <CardDescription>
+            Toggle optional markers on your calendar.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-x-6 gap-y-4 pt-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox id="birth" checked={showMilestones.birth} onCheckedChange={(checked) => setShowMilestones(prev => ({ ...prev, birth: !!checked }))} />
+              <Label htmlFor="birth" className="text-sm font-normal leading-none cursor-pointer">Birth</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox id="eighteen" checked={showMilestones.eighteen} onCheckedChange={(checked) => setShowMilestones(prev => ({ ...prev, eighteen: !!checked }))} />
+              <Label htmlFor="eighteen" className="text-sm font-normal leading-none cursor-pointer">18th Birthday</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox id="graduation" checked={showMilestones.graduation} onCheckedChange={(checked) => setShowMilestones(prev => ({ ...prev, graduation: !!checked }))} />
+              <Label htmlFor="graduation" className="text-sm font-normal leading-none cursor-pointer">Graduation</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox id="today" checked={showMilestones.today} onCheckedChange={(checked) => setShowMilestones(prev => ({ ...prev, today: !!checked }))} />
+              <Label htmlFor="today" className="text-sm font-normal leading-none cursor-pointer">Today</Label>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {weeks.length > 0 && (
-        <div key={`${weeksLived}-${totalWeeks}`} className="mt-8 sm:mt-12 w-full flex justify-center">
+        <div className="mt-8 sm:mt-12 w-full flex justify-center">
           <div className="w-full overflow-x-auto pb-4">
             <div
               className="grid gap-1.5 w-max mx-auto"
@@ -138,26 +191,44 @@ export function LifeCalendar() {
               } weeks remaining.`}
               role="grid"
             >
-              {weeks.map((week, index) => (
-                <div
-                  key={index}
-                  role="gridcell"
-                  aria-label={`Week ${week.weekNumber}, ${week.isLived ? 'Lived' : 'Remaining'}`}
-                  style={
-                    isMounted && week.isLived
-                      ? { animationDelay: `${(Math.pow(index / weeksLived, 2) * 1.5).toFixed(4)}s` }
-                      : {}
-                  }
-                  className={cn(
-                    "h-3 w-3 rounded-sm transition-colors duration-200",
-                    week.isLived
-                      ? "bg-primary"
-                      : "bg-transparent border border-primary/20",
-                    isMounted && week.isLived && "animate-grow-in opacity-0",
-                    "hover:bg-accent hover:border-accent"
-                  )}
-                />
-              ))}
+              {weeks.map((week, index) => {
+                const milestoneText = getMilestoneText(week.weekNumber);
+                const isMilestone = milestoneText.length > 0;
+
+                const className = cn(
+                  "h-3 w-3 rounded-sm transition-colors duration-200",
+                  {
+                    "bg-accent": isMilestone && (week.isLived || week.weekNumber === weeksLived),
+                    "border-2 border-accent": isMilestone && !week.isLived && week.weekNumber !== weeksLived,
+                    "bg-primary": !isMilestone && week.isLived,
+                    "bg-transparent border border-primary/20": !isMilestone && !week.isLived,
+                    "opacity-30": week.isBeyondLifespan,
+                  },
+                  isMounted && week.isLived && !isMilestone && "animate-grow-in opacity-0",
+                  "hover:bg-accent hover:border-accent"
+                );
+                const style = isMounted && week.isLived
+                              ? { animationDelay: `${(Math.pow(index / (weeksLived || 1), 2) * 1.5).toFixed(4)}s` }
+                              : {};
+                const ariaLabel = `Week ${week.weekNumber}, ${week.isLived ? 'Lived' : 'Remaining'}${isMilestone ? `, Milestone: ${milestoneText}` : ''}`;
+                
+                if (isMilestone) {
+                  return (
+                    <TooltipProvider key={index} delayDuration={0}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div role="gridcell" aria-label={ariaLabel} style={style} className={className} />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{milestoneText}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  );
+                }
+                
+                return <div key={index} role="gridcell" aria-label={ariaLabel} style={style} className={className} />;
+              })}
             </div>
           </div>
         </div>
