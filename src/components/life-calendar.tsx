@@ -21,7 +21,10 @@ export function LifeCalendar() {
 
   useEffect(() => {
     setIsMounted(true);
-  }, []);
+    if (age > lifespan) {
+      setLifespan(age);
+    }
+  }, [age, lifespan]);
 
   const weeksLived = useMemo(() => Math.floor(age * 52), [age]);
   const totalWeeks = useMemo(() => Math.floor(lifespan * 52), [lifespan]);
@@ -35,11 +38,11 @@ export function LifeCalendar() {
   }, [totalWeeks, weeksLived, lifespan, age]);
 
   const handleAgeChange = (amount: number) => {
-    setAge((prev) => Math.max(0, prev + amount));
+    setAge((prev) => Math.max(0, Math.min(prev + amount, lifespan)));
   };
 
   const handleLifespanChange = (amount: number) => {
-    setLifespan((prev) => Math.max(0, prev + amount));
+    setLifespan((prev) => Math.max(age, prev + amount));
   };
 
   return (
@@ -71,9 +74,10 @@ export function LifeCalendar() {
                   type="number"
                   value={age}
                   onChange={(e) =>
-                    setAge(Math.max(0, parseInt(e.target.value, 10) || 0))
+                    setAge(Math.max(0, Math.min(parseInt(e.target.value, 10) || 0, lifespan)))
                   }
                   min="0"
+                  max={lifespan}
                   className="w-20 text-center text-lg"
                   aria-label="Current Age"
                 />
@@ -82,6 +86,7 @@ export function LifeCalendar() {
                   size="icon"
                   className="h-10 w-10 shrink-0 rounded-full"
                   onClick={() => handleAgeChange(1)}
+                  disabled={age >= lifespan}
                 >
                   <Plus className="h-4 w-4" />
                   <span className="sr-only">Increase age</span>
@@ -96,7 +101,7 @@ export function LifeCalendar() {
                   size="icon"
                   className="h-10 w-10 shrink-0 rounded-full"
                   onClick={() => handleLifespanChange(-1)}
-                  disabled={lifespan <= 0}
+                  disabled={lifespan <= age}
                 >
                   <Minus className="h-4 w-4" />
                   <span className="sr-only">Decrease lifespan</span>
@@ -106,9 +111,9 @@ export function LifeCalendar() {
                   type="number"
                   value={lifespan}
                   onChange={(e) =>
-                    setLifespan(Math.max(0, parseInt(e.target.value, 10) || 0))
+                    setLifespan(Math.max(age, parseInt(e.target.value, 10) || 0))
                   }
-                  min="0"
+                  min={age}
                   className="w-20 text-center text-lg"
                   aria-label="Expected Lifespan"
                 />
