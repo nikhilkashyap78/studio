@@ -21,28 +21,25 @@ export function LifeCalendar() {
 
   useEffect(() => {
     setIsMounted(true);
-    if (age > lifespan) {
-      setLifespan(age);
-    }
-  }, [age, lifespan]);
+  }, []);
 
   const weeksLived = useMemo(() => Math.floor(age * 52), [age]);
   const totalWeeks = useMemo(() => Math.floor(lifespan * 52), [lifespan]);
 
   const weeks = useMemo(() => {
-    if (totalWeeks <= 0 || lifespan < age) return [];
+    if (totalWeeks <= 0) return [];
     return Array.from({ length: totalWeeks }, (_, i) => ({
       isLived: i < weeksLived,
       weekNumber: i + 1,
     }));
-  }, [totalWeeks, weeksLived, lifespan, age]);
+  }, [totalWeeks, weeksLived]);
 
   const handleAgeChange = (amount: number) => {
-    setAge((prev) => Math.max(0, Math.min(prev + amount, lifespan)));
+    setAge((prev) => Math.max(0, prev + amount));
   };
 
   const handleLifespanChange = (amount: number) => {
-    setLifespan((prev) => Math.max(age, prev + amount));
+    setLifespan((prev) => Math.max(0, prev + amount));
   };
 
   return (
@@ -74,10 +71,9 @@ export function LifeCalendar() {
                   type="number"
                   value={age}
                   onChange={(e) =>
-                    setAge(Math.max(0, Math.min(parseInt(e.target.value, 10) || 0, lifespan)))
+                    setAge(Math.max(0, parseInt(e.target.value, 10) || 0))
                   }
                   min="0"
-                  max={lifespan}
                   className="w-20 text-center text-lg"
                   aria-label="Current Age"
                 />
@@ -86,7 +82,6 @@ export function LifeCalendar() {
                   size="icon"
                   className="h-10 w-10 shrink-0 rounded-full"
                   onClick={() => handleAgeChange(1)}
-                  disabled={age >= lifespan}
                 >
                   <Plus className="h-4 w-4" />
                   <span className="sr-only">Increase age</span>
@@ -101,7 +96,7 @@ export function LifeCalendar() {
                   size="icon"
                   className="h-10 w-10 shrink-0 rounded-full"
                   onClick={() => handleLifespanChange(-1)}
-                  disabled={lifespan <= age}
+                  disabled={lifespan <= 0}
                 >
                   <Minus className="h-4 w-4" />
                   <span className="sr-only">Decrease lifespan</span>
@@ -111,9 +106,9 @@ export function LifeCalendar() {
                   type="number"
                   value={lifespan}
                   onChange={(e) =>
-                    setLifespan(Math.max(age, parseInt(e.target.value, 10) || 0))
+                    setLifespan(Math.max(0, parseInt(e.target.value, 10) || 0))
                   }
-                  min={age}
+                  min="0"
                   className="w-20 text-center text-lg"
                   aria-label="Expected Lifespan"
                 />
@@ -133,7 +128,7 @@ export function LifeCalendar() {
       </Card>
 
       {weeks.length > 0 && (
-        <div key={weeksLived} className="mt-8 sm:mt-12 w-full flex justify-center">
+        <div key={`${weeksLived}-${totalWeeks}`} className="mt-8 sm:mt-12 w-full flex justify-center">
           <div className="w-full overflow-x-auto pb-4">
             <div
               className="grid gap-1.5 w-max mx-auto"
