@@ -44,7 +44,7 @@ export function LifeCalendar() {
 
   return (
     <div className="w-full max-w-5xl mx-auto">
-      <Card className="w-full max-w-md mx-auto mt-12 bg-card/80 backdrop-blur-sm border-primary/20 shadow-lg">
+      <Card className="w-full max-w-md mx-auto mt-8 sm:mt-12 bg-card/80 backdrop-blur-sm border-primary/20 shadow-lg">
         <CardHeader>
           <CardTitle className="text-primary">Your Life in Weeks</CardTitle>
           <CardDescription>
@@ -52,7 +52,7 @@ export function LifeCalendar() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <div className="space-y-2">
               <Label htmlFor="age" className="text-center block">Current Age</Label>
               <div className="flex items-center justify-center gap-2">
@@ -128,7 +128,7 @@ export function LifeCalendar() {
       </Card>
 
       {weeks.length > 0 && (
-        <div className="mt-12 w-full flex justify-center">
+        <div className="mt-8 sm:mt-12 w-full flex justify-center">
           <div className="w-full overflow-x-auto pb-4">
             <div
               className="grid gap-1.5 w-max mx-auto"

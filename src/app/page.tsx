@@ -2,7 +2,7 @@ import { LifeCalendar } from '@/components/life-calendar';
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center p-4 pt-12 sm:pt-16 md:pt-24 bg-background">
+    <main className="flex min-h-screen flex-col items-center p-4 pt-8 sm:pt-12 md:pt-24 bg-background">
       <div className="w-full max-w-7xl mx-auto text-center">
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-headline font-extrabold tracking-tight text-primary">
           Memento Mori Calendar
@@ -14,7 +14,7 @@ export default function Home() {
 
       <LifeCalendar />
 
-      <p className="mt-12 text-sm text-muted-foreground">
+      <p className="mt-8 sm:mt-12 text-sm text-muted-foreground">
         Every box is one week you’ll never get back.
       </p>
     </main>
