@@ -128,7 +128,7 @@ export function LifeCalendar() {
       </Card>
 
       {weeks.length > 0 && (
-        <div className="mt-8 sm:mt-12 w-full flex justify-center">
+        <div key={weeksLived} className="mt-8 sm:mt-12 w-full flex justify-center">
           <div className="w-full overflow-x-auto pb-4">
             <div
               className="grid gap-1.5 w-max mx-auto"
@@ -145,7 +145,7 @@ export function LifeCalendar() {
                   aria-label={`Week ${week.weekNumber}, ${week.isLived ? 'Lived' : 'Remaining'}`}
                   style={
                     isMounted && week.isLived
-                      ? { animationDelay: `${index * 0.0015}s` }
+                      ? { animationDelay: `${(Math.pow(index / weeksLived, 2) * 1.5).toFixed(4)}s` }
                       : {}
                   }
                   className={cn(
