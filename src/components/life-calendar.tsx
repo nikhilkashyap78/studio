@@ -20,6 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Switch } from "@/components/ui/switch";
 
 export function LifeCalendar() {
   const [age, setAge] = useState(25);
@@ -31,6 +32,7 @@ export function LifeCalendar() {
     graduation: true,
     today: true,
   });
+  const [isBrutal, setIsBrutal] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -179,6 +181,21 @@ export function LifeCalendar() {
           </div>
         </CardContent>
       </Card>
+      
+      <Card className="w-full max-w-md mx-auto mt-8 bg-card/80 backdrop-blur-sm border-primary/20 shadow-lg">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-primary">Copy Mode</CardTitle>
+          <CardDescription>
+            Switch between soft and brutal reminders.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center space-x-2 pt-2">
+            <Switch id="brutal-mode" checked={isBrutal} onCheckedChange={setIsBrutal} />
+            <Label htmlFor="brutal-mode" className="text-sm font-normal leading-none cursor-pointer">Enable Brutal Copy</Label>
+          </div>
+        </CardContent>
+      </Card>
 
       {weeks.length > 0 && (
         <div className="mt-8 sm:mt-12 w-full flex justify-center">
@@ -233,6 +250,11 @@ export function LifeCalendar() {
           </div>
         </div>
       )}
+      <p className="mt-8 sm:mt-12 text-sm text-muted-foreground text-center">
+        {isBrutal
+          ? `You've already spent ${weeksLived.toLocaleString()} weekends. ${totalWeeks > weeksLived ? `You may only have ${(totalWeeks - weeksLived).toLocaleString()} left.` : 'Make them count.'}`
+          : "Every box is one week you’ll never get back."}
+      </p>
     </div>
   );
 }

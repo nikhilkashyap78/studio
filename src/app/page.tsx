@@ -13,10 +13,6 @@ export default function Home() {
       </div>
 
       <LifeCalendar />
-
-      <p className="mt-8 sm:mt-12 text-sm text-muted-foreground">
-        Every box is one week you’ll never get back.
-      </p>
     </main>
   );
 }
