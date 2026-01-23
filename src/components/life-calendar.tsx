@@ -16,51 +16,39 @@ import { Minus, Plus, Share2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
-export function LifeCalendar() {
-  const [age, setAge] = useState(25);
-  const [lifespan, setLifespan] = useState(90);
-  const { toast } = useToast();
-  const printableRef = useRef<HTMLDivElement>(null);
-  const [isSharing, setIsSharing] = useState(false);
-
-  const [animatedWeeks, setAnimatedWeeks] = useState(0);
+const useAnimatedCounter = (target: number, duration = 800) => {
+  const [count, setCount] = useState(target);
+  const countRef = useRef(target);
   const animationFrameId = useRef<number | null>(null);
 
-  const weeksLived = useMemo(() => Math.floor(age * 52), [age]);
-  const totalWeeks = useMemo(() => Math.floor(lifespan * 52), [lifespan]);
+  useEffect(() => {
+    countRef.current = count;
+  }, [count]);
 
   useEffect(() => {
-    setAnimatedWeeks(weeksLived);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    if (animationFrameId.current) {
-      cancelAnimationFrame(animationFrameId.current);
+    const startValue = countRef.current;
+    if (startValue === target) {
+      return;
     }
 
-    const animate = () => {
-      setAnimatedWeeks((currentAnimated) => {
-        if (currentAnimated === weeksLived) {
-          return weeksLived; // Stop animation
-        }
+    let startTime: number | null = null;
+    
+    const animate = (timestamp: number) => {
+      if (startTime === null) {
+        startTime = timestamp;
+      }
 
-        let nextValue;
-        if (currentAnimated < weeksLived) {
-          const diff = weeksLived - currentAnimated;
-          const increment = Math.max(1, Math.ceil(diff / 20)); // Ease-out
-          nextValue = Math.min(weeksLived, currentAnimated + increment);
-        } else {
-          const diff = currentAnimated - weeksLived;
-          const decrement = Math.max(1, Math.ceil(diff / 20)); // Ease-out
-          nextValue = Math.max(weeksLived, currentAnimated - decrement);
-        }
+      const elapsedTime = timestamp - startTime;
+      const progress = Math.min(elapsedTime / duration, 1);
+      const easedProgress = 1 - Math.pow(1 - progress, 3); // Ease-out cubic
 
-        if (nextValue !== weeksLived) {
-          animationFrameId.current = requestAnimationFrame(animate);
-        }
+      const nextValue = Math.round(startValue + (target - startValue) * easedProgress);
+      
+      setCount(nextValue);
 
-        return nextValue;
-      });
+      if (progress < 1) {
+        animationFrameId.current = requestAnimationFrame(animate);
+      }
     };
 
     animationFrameId.current = requestAnimationFrame(animate);
@@ -70,7 +58,21 @@ export function LifeCalendar() {
         cancelAnimationFrame(animationFrameId.current);
       }
     };
-  }, [weeksLived]);
+  }, [target, duration]);
+
+  return count;
+};
+
+export function LifeCalendar() {
+  const [age, setAge] = useState(25);
+  const [lifespan, setLifespan] = useState(90);
+  const { toast } = useToast();
+  const printableRef = useRef<HTMLDivElement>(null);
+  const [isSharing, setIsSharing] = useState(false);
+
+  const weeksLived = useMemo(() => Math.floor(age * 52), [age]);
+  const totalWeeks = useMemo(() => Math.floor(lifespan * 52), [lifespan]);
+  const animatedWeeks = useAnimatedCounter(weeksLived);
 
   const weeks = useMemo(() => {
     const displayWeeks = Math.max(totalWeeks, weeksLived);
@@ -82,19 +84,19 @@ export function LifeCalendar() {
     }));
   }, [totalWeeks, weeksLived]);
 
-  const handleAgeChange = (amount: number) => {
+  const handleAgeChange = useCallback((amount: number) => {
     const newAge = age + amount;
     if (newAge >= 0) {
       setAge(newAge);
     }
-  };
+  }, [age]);
 
-  const handleLifespanChange = (amount: number) => {
+  const handleLifespanChange = useCallback((amount: number) => {
     const newLifespan = lifespan + amount;
     setLifespan(Math.max(0, newLifespan));
-  };
+  }, [lifespan]);
 
-  const handleShare = async () => {
+  const handleShare = useCallback(async () => {
     if (!printableRef.current) return;
     setIsSharing(true);
 
@@ -147,7 +149,7 @@ export function LifeCalendar() {
       }
       setIsSharing(false);
     }
-  };
+  }, [toast]);
 
   return (
     <div className="w-full max-w-5xl mx-auto">
@@ -338,5 +340,3 @@ export function LifeCalendar() {
     </div>
   );
 }
-
-    
