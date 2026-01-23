@@ -25,44 +25,9 @@ export function LifeCalendar() {
 
   const [animatedWeeks, setAnimatedWeeks] = useState(0);
   const animationFrameId = useRef<number | null>(null);
-  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
 
   const weeksLived = useMemo(() => Math.floor(age * 52), [age]);
   const totalWeeks = useMemo(() => Math.floor(lifespan * 52), [lifespan]);
-
-  const initAudio = useCallback(() => {
-    if (audioContext) return audioContext;
-    try {
-      const context = new (window.AudioContext ||
-        (window as any).webkitAudioContext)();
-      setAudioContext(context);
-      return context;
-    } catch (e) {
-      console.error("Web Audio API is not supported in this browser.");
-      return null;
-    }
-  }, [audioContext]);
-
-  const playTick = useCallback(() => {
-    const context = initAudio();
-    if (!context) return;
-
-    const oscillator = context.createOscillator();
-    const gainNode = context.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(context.destination);
-
-    oscillator.type = "triangle";
-    oscillator.frequency.setValueAtTime(1200, context.currentTime);
-    gainNode.gain.setValueAtTime(0.05, context.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(
-      0.00001,
-      context.currentTime + 0.1
-    );
-    oscillator.start(context.currentTime);
-    oscillator.stop(context.currentTime + 0.1);
-  }, [initAudio]);
 
   useEffect(() => {
     setAnimatedWeeks(weeksLived);
@@ -73,20 +38,10 @@ export function LifeCalendar() {
       cancelAnimationFrame(animationFrameId.current);
     }
 
-    let isIncrementing: boolean | null = null;
-
     const animate = () => {
       setAnimatedWeeks((currentAnimated) => {
-        if (isIncrementing === null) {
-          isIncrementing = weeksLived > currentAnimated;
-        }
-
         if (currentAnimated === weeksLived) {
           return weeksLived; // Stop animation
-        }
-
-        if (isIncrementing) {
-          playTick();
         }
 
         let nextValue;
@@ -115,7 +70,7 @@ export function LifeCalendar() {
         cancelAnimationFrame(animationFrameId.current);
       }
     };
-  }, [weeksLived, playTick]);
+  }, [weeksLived]);
 
   const weeks = useMemo(() => {
     const displayWeeks = Math.max(totalWeeks, weeksLived);
@@ -128,7 +83,6 @@ export function LifeCalendar() {
   }, [totalWeeks, weeksLived]);
 
   const handleAgeChange = (amount: number) => {
-    initAudio();
     const newAge = age + amount;
     if (newAge >= 0) {
       setAge(newAge);
@@ -136,7 +90,6 @@ export function LifeCalendar() {
   };
 
   const handleLifespanChange = (amount: number) => {
-    initAudio();
     const newLifespan = lifespan + amount;
     setLifespan(Math.max(0, newLifespan));
   };
@@ -145,10 +98,9 @@ export function LifeCalendar() {
     if (!printableRef.current) return;
     setIsSharing(true);
 
-    const ageInputWrapper = document.getElementById("age-input-wrapper");
-    if (ageInputWrapper) {
-      ageInputWrapper.style.transition = "filter 0.2s ease";
-      ageInputWrapper.style.filter = "blur(5px)";
+    const inputCard = document.getElementById("input-card");
+    if (inputCard) {
+      inputCard.style.display = "none";
     }
 
     try {
@@ -190,8 +142,8 @@ export function LifeCalendar() {
         description: "Could not generate or share your calendar image.",
       });
     } finally {
-      if (ageInputWrapper) {
-        ageInputWrapper.style.filter = "";
+      if (inputCard) {
+        inputCard.style.display = "block";
       }
       setIsSharing(false);
     }
@@ -213,7 +165,7 @@ export function LifeCalendar() {
           </p>
         </div>
 
-        <Card className="w-full max-w-md mx-auto mt-8 sm:mt-12 bg-card/80 backdrop-blur-sm border-primary/20 shadow-lg">
+        <Card id="input-card" className="w-full max-w-md mx-auto mt-8 sm:mt-12 bg-card/80 backdrop-blur-sm border-primary/20 shadow-lg">
           <CardHeader>
             <CardTitle className="text-primary">Your Life in Weeks</CardTitle>
             <CardDescription>
@@ -304,44 +256,42 @@ export function LifeCalendar() {
 
         {weeks.length > 0 && (
           <div className="mt-8 sm:mt-12 w-full flex justify-center">
-            <div className="w-full overflow-x-auto pb-4">
-              <div
-                className="grid gap-1.5 w-max mx-auto"
-                style={{ gridTemplateColumns: "repeat(52, minmax(0, 1fr))" }}
-                aria-label={`Life calendar grid, ${weeksLived} weeks lived, ${
-                  totalWeeks > weeksLived
-                    ? totalWeeks - weeksLived
-                    : 0
-                } weeks remaining.`}
-                role="grid"
-              >
-                {weeks.map((week, index) => {
-                  const isShownAsLived = index < animatedWeeks;
-                  const className = cn(
-                    "h-3 w-3 rounded-sm transition-colors duration-200",
-                    {
-                      "bg-primary": isShownAsLived,
-                      "bg-transparent border border-primary/20":
-                        !isShownAsLived,
-                      "opacity-30": week.isBeyondLifespan,
-                    },
-                    "hover:bg-accent hover:border-accent"
-                  );
+            <div
+              className="grid gap-1.5 w-max mx-auto"
+              style={{ gridTemplateColumns: "repeat(52, minmax(0, 1fr))" }}
+              aria-label={`Life calendar grid, ${weeksLived} weeks lived, ${
+                totalWeeks > weeksLived
+                  ? totalWeeks - weeksLived
+                  : 0
+              } weeks remaining.`}
+              role="grid"
+            >
+              {weeks.map((week, index) => {
+                const isShownAsLived = index < animatedWeeks;
+                const className = cn(
+                  "h-3 w-3 rounded-sm transition-colors duration-200",
+                  {
+                    "bg-primary": isShownAsLived,
+                    "bg-transparent border border-primary/20":
+                      !isShownAsLived,
+                    "opacity-30": week.isBeyondLifespan,
+                  },
+                  "hover:bg-accent hover:border-accent"
+                );
 
-                  const ariaLabel = `Week ${week.weekNumber}, ${
-                    week.isLived ? "Lived" : "Remaining"
-                  }`;
+                const ariaLabel = `Week ${week.weekNumber}, ${
+                  week.isLived ? "Lived" : "Remaining"
+                }`;
 
-                  return (
-                    <div
-                      key={index}
-                      role="gridcell"
-                      aria-label={ariaLabel}
-                      className={className}
-                    />
-                  );
-                })}
-              </div>
+                return (
+                  <div
+                    key={index}
+                    role="gridcell"
+                    aria-label={ariaLabel}
+                    className={className}
+                  />
+                );
+              })}
             </div>
           </div>
         )}
@@ -388,3 +338,5 @@ export function LifeCalendar() {
     </div>
   );
 }
+
+    
