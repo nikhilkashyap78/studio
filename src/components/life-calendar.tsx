@@ -137,12 +137,18 @@ export function LifeCalendar() {
         document.body.removeChild(link);
       }
     } catch (error) {
-      console.error("Could not share calendar", error);
-      toast({
-        variant: "destructive",
-        title: "Sharing failed",
-        description: "Could not generate or share your calendar image.",
-      });
+      // Don't show an error toast if the user simply canceled the share dialog,
+      // or if there was a gesture-related issue.
+      if (error instanceof Error && (error.name === 'AbortError' || error.name === 'NotAllowedError')) {
+         console.error("Could not share calendar (share operation not allowed or cancelled):", error);
+      } else {
+        console.error("Could not share calendar", error);
+        toast({
+          variant: "destructive",
+          title: "Sharing failed",
+          description: "Could not generate or share your calendar image.",
+        });
+      }
     } finally {
       if (inputCard) {
         inputCard.style.display = "block";
