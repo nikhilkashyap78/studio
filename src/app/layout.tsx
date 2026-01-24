@@ -1,15 +1,55 @@
-import type {Metadata} from 'next';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+});
+
+// Using a placeholder URL. For production, you should deploy your site and replace this.
+const siteUrl = 'https://memento-mori-calendar.example.com';
+
 export const metadata: Metadata = {
-  title: 'Memento Mori Calendar',
-  description: 'Your life in weeks. A visceral reminder of your most precious resource.',
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: 'Memento Mori: Your Life in Weeks Calendar',
+    template: '%s | Memento Mori Calendar',
+  },
+  description: 'Visualize your life in weeks with our interactive Memento Mori calendar. A powerful stoic tool for reflection, motivation, and a visceral reminder of your most precious resource: time.',
+  keywords: ['memento mori', 'life calendar', 'weeks of my life', 'stoicism', 'stoic calendar', 'life visualization', 'motivation tool', 'productivity app', 'time management'],
+  
   openGraph: {
-    title: 'Memento Mori Calendar',
-    description: 'Your life in weeks. A visceral reminder of your most precious resource.',
-    type: 'website',
+    title: 'Memento Mori: Your Life in Weeks Calendar',
+    description: 'Visualize your life in weeks. A powerful reminder of your most precious resource.',
+    url: siteUrl,
+    siteName: 'Memento Mori Calendar',
     locale: 'en_US',
+    type: 'website',
+  },
+  
+  twitter: {
+    card: 'summary',
+    title: 'Memento Mori: Your Life in Weeks Calendar',
+    description: 'Visualize your life in weeks. A powerful reminder of your most precious resource.',
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  
+  alternates: {
+    canonical: siteUrl,
   },
 };
 
@@ -18,12 +58,28 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Memento Mori Calendar',
+    operatingSystem: 'WEB',
+    applicationCategory: 'BrowserApplication',
+    description: 'A web application to visualize your life in weeks, inspired by the stoic concept of Memento Mori.',
+    url: siteUrl,
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    }
+  };
+
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className={`${inter.variable} dark`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet" crossOrigin="anonymous" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
       </head>
       <body className="font-body antialiased" suppressHydrationWarning={true}>
         {children}
