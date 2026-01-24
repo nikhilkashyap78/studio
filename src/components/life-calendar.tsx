@@ -292,8 +292,8 @@ export function LifeCalendar() {
                 const className = cn(
                   "rounded-sm transition-colors duration-200",
                   aspectRatio === '16:9'
-                    ? 'h-1.5 w-1.5'
-                    : 'h-0.5 w-0.5',
+                    ? 'h-1 w-1 md:h-1.5 md:w-1.5'
+                    : 'h-1.5 w-1.5 md:h-2 md:w-2',
                   {
                     "bg-primary": isShownAsLived,
                     "bg-transparent border border-primary/20":
