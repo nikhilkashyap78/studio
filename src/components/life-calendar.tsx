@@ -119,6 +119,15 @@ export function LifeCalendar() {
       inputCard.style.display = "none";
     }
 
+    const downloadImage = (url: string) => {
+      const link = document.createElement("a");
+      link.download = "memento-mori.png";
+      link.href = url;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+
     try {
       await new Promise((resolve) => setTimeout(resolve, 100));
 
@@ -126,41 +135,35 @@ export function LifeCalendar() {
         cacheBust: true,
         backgroundColor: window.getComputedStyle(document.body).backgroundColor,
         pixelRatio: 2,
-        fetchRequestInit: {
-          headers: new Headers(),
-          mode: 'cors',
-          cache: 'no-cache',
-        }
       });
 
       const blob = await fetch(dataUrl).then((res) => res.blob());
       const file = new File([blob], "memento-mori.png", { type: "image/png" });
 
       if (navigator.share && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          title: "Memento Mori Calendar",
-          text: "Your life in weeks. A visceral reminder of your most precious resource.",
-          files: [file],
-        });
+        try {
+          await navigator.share({
+            title: "Memento Mori Calendar",
+            text: "Your life in weeks. A visceral reminder of your most precious resource.",
+            files: [file],
+          });
+        } catch (error) {
+          if (error instanceof Error && (error.name === 'AbortError' || error.name === 'NotAllowedError')) {
+            downloadImage(dataUrl);
+          } else {
+            throw error;
+          }
+        }
       } else {
-        const link = document.createElement("a");
-        link.download = "memento-mori.png";
-        link.href = dataUrl;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        downloadImage(dataUrl);
       }
     } catch (error) {
-      if (error instanceof Error && (error.name === 'AbortError' || error.name === 'NotAllowedError')) {
-         console.error("Could not share calendar (share operation not allowed or cancelled):", error);
-      } else {
-        console.error("Could not share calendar", error);
-        toast({
-          variant: "destructive",
-          title: "Sharing failed",
-          description: "Could not generate or share your calendar image.",
-        });
-      }
+      console.error("Could not generate or share calendar", error);
+      toast({
+        variant: "destructive",
+        title: "Sharing failed",
+        description: "Could not generate or share your calendar image.",
+      });
     } finally {
       if (inputCard) {
         inputCard.style.display = "block";
