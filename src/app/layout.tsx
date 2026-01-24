@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
+import { Navbar } from '@/components/navbar';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
     template: '%s | Memento Mori Calendar',
   },
   description: 'Visualize your life in weeks with our interactive Memento Mori calendar. A powerful stoic tool for reflection, motivation, and a visceral reminder of your most precious resource: time.',
-  keywords: ['memento mori', 'life calendar', 'weeks of my life', 'stoicism', 'stoic calendar', 'life visualization', 'motivation tool', 'productivity app', 'time management'],
+  keywords: ['memento mori', 'life calendar', 'weeks of my life', 'stoicism', 'stoic calendar', 'life visualization', 'motivation tool', 'productivity app', 'time management', 'time cost calculator'],
   
   openGraph: {
     title: 'Memento Mori: Your Life in Weeks Calendar',
@@ -82,6 +83,7 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased" suppressHydrationWarning={true}>
+        <Navbar />
         {children}
         <Toaster />
       </body>
