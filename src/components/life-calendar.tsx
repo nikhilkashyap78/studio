@@ -83,11 +83,6 @@ export function LifeCalendar() {
   const totalWeeks = useMemo(() => Math.floor(lifespan * 52), [lifespan]);
   const animatedWeeks = useAnimatedCounter(weeksLived);
 
-  const gridColumns = useMemo(
-    () => (aspectRatio === "16:9" ? 52 : 26),
-    [aspectRatio]
-  );
-
   const weeks = useMemo(() => {
     const displayWeeks = Math.max(totalWeeks, weeksLived);
     if (displayWeeks <= 0) return [];
@@ -280,10 +275,10 @@ export function LifeCalendar() {
         {weeks.length > 0 && (
           <div className="mt-8 sm:mt-12 w-full flex justify-center">
             <div
-              className="grid gap-1.5 w-max mx-auto transition-all duration-300 ease-in-out"
-              style={{
-                gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))`,
-              }}
+              className={cn(
+                "grid w-max mx-auto transition-all duration-300 ease-in-out gap-1 sm:gap-1.5",
+                aspectRatio === '16:9' ? 'grid-cols-26 md:grid-cols-52' : 'grid-cols-26'
+              )}
               aria-label={`Life calendar grid, ${weeksLived} weeks lived, ${
                 totalWeeks > weeksLived
                   ? totalWeeks - weeksLived
@@ -294,7 +289,7 @@ export function LifeCalendar() {
               {weeks.map((week, index) => {
                 const isShownAsLived = index < animatedWeeks;
                 const className = cn(
-                  "h-3 w-3 rounded-sm transition-colors duration-200",
+                  "h-2 w-2 sm:h-3 sm:w-3 rounded-sm transition-colors duration-200",
                   {
                     "bg-primary": isShownAsLived,
                     "bg-transparent border border-primary/20":

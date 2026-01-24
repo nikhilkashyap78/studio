@@ -9,6 +9,10 @@ export default {
   ],
   theme: {
     extend: {
+      gridTemplateColumns: {
+        '26': 'repeat(26, minmax(0, 1fr))',
+        '52': 'repeat(52, minmax(0, 1fr))',
+      },
       fontFamily: {
         body: ['Inter', 'sans-serif'],
         headline: ['Inter', 'sans-serif'],
