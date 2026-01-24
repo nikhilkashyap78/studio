@@ -277,8 +277,8 @@ export function LifeCalendar() {
               className={cn(
                 "grid w-max mx-auto transition-all duration-300 ease-in-out",
                 aspectRatio === '16:9'
-                  ? 'grid-cols-52 gap-px sm:gap-0.5 md:gap-1'
-                  : 'grid-cols-26 gap-1 sm:gap-1.5 md:gap-2'
+                  ? 'grid-cols-52 gap-px'
+                  : 'grid-cols-26 gap-px'
               )}
               aria-label={`Life calendar grid, ${weeksLived} weeks lived, ${
                 totalWeeks > weeksLived
@@ -292,8 +292,8 @@ export function LifeCalendar() {
                 const className = cn(
                   "rounded-sm transition-colors duration-200",
                   aspectRatio === '16:9'
-                    ? 'h-1.5 w-1.5 sm:h-2 sm:w-2 md:h-2.5 md:w-2.5'
-                    : 'h-2 w-2 sm:h-3 sm:w-3 md:h-4 md:w-4',
+                    ? 'h-1.5 w-1.5'
+                    : 'h-0.5 w-0.5',
                   {
                     "bg-primary": isShownAsLived,
                     "bg-transparent border border-primary/20":
