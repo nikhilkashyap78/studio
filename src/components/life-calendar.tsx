@@ -164,7 +164,7 @@ export function LifeCalendar() {
       }
       setIsSharing(false);
     }
-  }, [toast]);
+  }, [toast, aspectRatio]);
 
   return (
     <div className="w-full max-w-5xl mx-auto">
@@ -277,8 +277,8 @@ export function LifeCalendar() {
               className={cn(
                 "grid w-max mx-auto transition-all duration-300 ease-in-out",
                 aspectRatio === '16:9'
-                  ? 'grid-cols-52 gap-0.5 sm:gap-1'
-                  : 'grid-cols-26 gap-1 sm:gap-1.5'
+                  ? 'grid-cols-52 gap-px sm:gap-0.5 md:gap-1'
+                  : 'grid-cols-26 gap-1 sm:gap-1.5 md:gap-2'
               )}
               aria-label={`Life calendar grid, ${weeksLived} weeks lived, ${
                 totalWeeks > weeksLived
@@ -292,8 +292,8 @@ export function LifeCalendar() {
                 const className = cn(
                   "rounded-sm transition-colors duration-200",
                   aspectRatio === '16:9'
-                    ? 'h-1 w-1 sm:h-2 sm:w-2'
-                    : 'h-2 w-2 sm:h-3 sm:w-3',
+                    ? 'h-1.5 w-1.5 sm:h-2 sm:w-2 md:h-2.5 md:w-2.5'
+                    : 'h-2 w-2 sm:h-3 sm:w-3 md:h-4 md:w-4',
                   {
                     "bg-primary": isShownAsLived,
                     "bg-transparent border border-primary/20":
