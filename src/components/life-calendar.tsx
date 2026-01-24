@@ -12,9 +12,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, Share2, Loader2 } from "lucide-react";
+import {
+  Minus,
+  Plus,
+  Share2,
+  Loader2,
+  RectangleHorizontal,
+  RectangleVertical,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const useAnimatedCounter = (target: number, duration = 800) => {
   const [count, setCount] = useState(target);
@@ -69,10 +77,16 @@ export function LifeCalendar() {
   const { toast } = useToast();
   const printableRef = useRef<HTMLDivElement>(null);
   const [isSharing, setIsSharing] = useState(false);
+  const [aspectRatio, setAspectRatio] = useState<"16:9" | "9:16">("16:9");
 
   const weeksLived = useMemo(() => Math.floor(age * 52), [age]);
   const totalWeeks = useMemo(() => Math.floor(lifespan * 52), [lifespan]);
   const animatedWeeks = useAnimatedCounter(weeksLived);
+
+  const gridColumns = useMemo(
+    () => (aspectRatio === "16:9" ? 52 : 26),
+    [aspectRatio]
+  );
 
   const weeks = useMemo(() => {
     const displayWeeks = Math.max(totalWeeks, weeksLived);
@@ -137,8 +151,6 @@ export function LifeCalendar() {
         document.body.removeChild(link);
       }
     } catch (error) {
-      // Don't show an error toast if the user simply canceled the share dialog,
-      // or if there was a gesture-related issue.
       if (error instanceof Error && (error.name === 'AbortError' || error.name === 'NotAllowedError')) {
          console.error("Could not share calendar (share operation not allowed or cancelled):", error);
       } else {
@@ -265,8 +277,10 @@ export function LifeCalendar() {
         {weeks.length > 0 && (
           <div className="mt-8 sm:mt-12 w-full flex justify-center">
             <div
-              className="grid gap-1.5 w-max mx-auto"
-              style={{ gridTemplateColumns: "repeat(52, minmax(0, 1fr))" }}
+              className="grid gap-1.5 w-max mx-auto transition-all duration-300 ease-in-out"
+              style={{
+                gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))`,
+              }}
               aria-label={`Life calendar grid, ${weeksLived} weeks lived, ${
                 totalWeeks > weeksLived
                   ? totalWeeks - weeksLived
@@ -322,7 +336,47 @@ export function LifeCalendar() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="pt-2">
+          <div className="space-y-6 pt-2">
+            <div>
+              <Label className="text-sm font-medium">Aspect Ratio</Label>
+              <RadioGroup
+                value={aspectRatio}
+                onValueChange={(value) =>
+                  setAspectRatio(value as "16:9" | "9:16")
+                }
+                className="mt-2 grid grid-cols-2 gap-4"
+              >
+                <div>
+                  <RadioGroupItem
+                    value="16:9"
+                    id="ratio-16-9"
+                    className="peer sr-only"
+                  />
+                  <Label
+                    htmlFor="ratio-16-9"
+                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                  >
+                    <RectangleHorizontal className="mb-2 h-8 w-8" />
+                    <span className="text-sm">Horizontal</span>
+                  </Label>
+                </div>
+                <div>
+                  <RadioGroupItem
+                    value="9:16"
+                    id="ratio-9-16"
+                    className="peer sr-only"
+                  />
+                  <Label
+                    htmlFor="ratio-9-16"
+                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                  >
+                    <RectangleVertical className="mb-2 h-8 w-8" />
+                    <span className="text-sm">Vertical</span>
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+
             <Button
               onClick={handleShare}
               disabled={isSharing}
