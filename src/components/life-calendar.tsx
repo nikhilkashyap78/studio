@@ -127,7 +127,6 @@ export function LifeCalendar() {
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       const dataUrl = await toPng(printableRef.current, {
-        cacheBust: true,
         backgroundColor: window.getComputedStyle(document.body).backgroundColor,
         pixelRatio: 2,
       });
@@ -276,8 +275,10 @@ export function LifeCalendar() {
           <div className="mt-8 sm:mt-12 w-full flex justify-center">
             <div
               className={cn(
-                "grid w-max mx-auto transition-all duration-300 ease-in-out gap-1 sm:gap-1.5",
-                aspectRatio === '16:9' ? 'grid-cols-26 md:grid-cols-52' : 'grid-cols-26'
+                "grid w-max mx-auto transition-all duration-300 ease-in-out",
+                aspectRatio === '16:9'
+                  ? 'grid-cols-52 gap-0.5 sm:gap-1'
+                  : 'grid-cols-26 gap-1 sm:gap-1.5'
               )}
               aria-label={`Life calendar grid, ${weeksLived} weeks lived, ${
                 totalWeeks > weeksLived
@@ -289,7 +290,10 @@ export function LifeCalendar() {
               {weeks.map((week, index) => {
                 const isShownAsLived = index < animatedWeeks;
                 const className = cn(
-                  "h-2 w-2 sm:h-3 sm:w-3 rounded-sm transition-colors duration-200",
+                  "rounded-sm transition-colors duration-200",
+                  aspectRatio === '16:9'
+                    ? 'h-1 w-1 sm:h-2 sm:w-2'
+                    : 'h-2 w-2 sm:h-3 sm:w-3',
                   {
                     "bg-primary": isShownAsLived,
                     "bg-transparent border border-primary/20":
