@@ -78,6 +78,11 @@ export function LifeCalendar() {
   const printableRef = useRef<HTMLDivElement>(null);
   const [isSharing, setIsSharing] = useState(false);
   const [aspectRatio, setAspectRatio] = useState<"16:9" | "9:16">("16:9");
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const weeksLived = useMemo(() => Math.floor(age * 52), [age]);
   const totalWeeks = useMemo(() => Math.floor(lifespan * 52), [lifespan]);
@@ -271,7 +276,7 @@ export function LifeCalendar() {
           </CardContent>
         </Card>
 
-        {weeks.length > 0 && (
+        {isClient && weeks.length > 0 ? (
           <div className="mt-8 sm:mt-12 w-full flex justify-center">
             <div
               className={cn(
@@ -291,9 +296,9 @@ export function LifeCalendar() {
                 const isShownAsLived = index < animatedWeeks;
                 const className = cn(
                   "rounded-sm transition-colors duration-200",
-                  aspectRatio === '16:9'
-                    ? 'h-1 w-1 md:h-1.5 md:w-1.5'
-                    : 'h-1.5 w-1.5 md:h-2 md:w-2',
+                   aspectRatio === "16:9"
+                    ? "h-1 w-1"
+                    : "h-1.5 w-1.5 md:h-2 md:w-2",
                   {
                     "bg-primary": isShownAsLived,
                     "bg-transparent border border-primary/20":
@@ -317,6 +322,10 @@ export function LifeCalendar() {
                 );
               })}
             </div>
+          </div>
+        ) : (
+          <div className="mt-8 sm:mt-12 w-full flex justify-center items-center h-64">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         )}
         <p className="mt-8 sm:mt-12 text-sm text-muted-foreground text-center">

@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     default: 'Memento Mori: Your Life in Weeks Calendar',
     template: '%s | Memento Mori Calendar',
   },
-  description: 'Visualize your life in weeks with our interactive Memento Mori calendar. A powerful stoic tool for reflection, motivation, and a visceral reminder of your most precious resource: time.',
+  description: 'What if you could see your life on one screen? Our interactive Memento Mori calendar visualizes your life in weeks — a profound Stoic tool for reflection and motivation.',
   keywords: ['memento mori', 'life calendar', 'weeks of my life', 'stoicism', 'stoic calendar', 'life visualization', 'motivation tool', 'productivity app', 'time management', 'time cost calculator'],
   
   openGraph: {
@@ -78,6 +78,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} dark`}>
       <head>
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
