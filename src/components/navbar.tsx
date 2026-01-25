@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Calendar, Hourglass, Globe, BookText, Wallet } from 'lucide-react';
+import { Calendar, Hourglass, Globe, BookText, Wallet, TrendingUp } from 'lucide-react';
 
 export function Navbar() {
   const pathname = usePathname();
@@ -11,6 +11,7 @@ export function Navbar() {
   const navLinks = [
     { href: '/', label: 'Life Calendar', icon: Calendar },
     { href: '/time-cost', label: 'Time Cost', icon: Hourglass },
+    { href: '/opportunity-cost', label: 'Opportunity Cost', icon: TrendingUp },
     { href: '/global-rank', label: 'Global Rank', icon: Globe },
     { href: '/story', label: 'Story', icon: BookText },
     { href: '/runway', label: 'Runway', icon: Wallet },
