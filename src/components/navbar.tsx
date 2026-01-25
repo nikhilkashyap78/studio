@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Calendar, Hourglass, Globe, BookText } from 'lucide-react';
+import { Calendar, Hourglass, Globe, BookText, Wallet } from 'lucide-react';
 
 export function Navbar() {
   const pathname = usePathname();
@@ -13,24 +13,25 @@ export function Navbar() {
     { href: '/time-cost', label: 'Time Cost', icon: Hourglass },
     { href: '/global-rank', label: 'Global Rank', icon: Globe },
     { href: '/story', label: 'Story', icon: BookText },
+    { href: '/runway', label: 'Runway', icon: Wallet },
   ];
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 max-w-screen-2xl items-center justify-center">
-        <div className="flex items-center space-x-2 sm:space-x-4">
+        <div className="flex items-center space-x-1 sm:space-x-2">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className={cn(
-                'flex items-center justify-center rounded-full px-3 sm:px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground',
+                'flex items-center justify-center rounded-full px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground',
                 pathname === link.href
                   ? 'bg-primary text-primary-foreground'
                   : 'text-muted-foreground'
               )}
             >
-              <link.icon className="mr-2 h-4 w-4" />
+              <link.icon className="mr-1 sm:mr-2 h-4 w-4" />
               {link.label}
             </Link>
           ))}
