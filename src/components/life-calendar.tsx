@@ -23,7 +23,6 @@ import {
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Progress } from "@/components/ui/progress";
 
 const useAnimatedCounter = (target: number, duration = 800) => {
   const [count, setCount] = useState(target);
@@ -87,10 +86,6 @@ export function LifeCalendar() {
 
   const weeksLived = useMemo(() => Math.floor(age * 52), [age]);
   const totalWeeks = useMemo(() => Math.floor(lifespan * 52), [lifespan]);
-  const percentageLived = useMemo(() => {
-    if (lifespan === 0) return 0;
-    return (age / lifespan) * 100;
-  }, [age, lifespan]);
   const animatedWeeks = useAnimatedCounter(weeksLived);
 
   const weeks = useMemo(() => {
@@ -276,30 +271,6 @@ export function LifeCalendar() {
                     <span className="sr-only">Increase lifespan</span>
                   </Button>
                 </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="w-full max-w-md mx-auto mt-8 sm:mt-12 bg-card/80 backdrop-blur-sm border-primary/20 shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-primary">Your Life in a Progress Bar</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-4">
-            <div className="space-y-4">
-              <div className="text-center">
-                <p className="text-lg sm:text-xl font-semibold text-foreground">
-                  You’ve completed{" "}
-                  <span className="text-primary font-bold">
-                    {percentageLived.toFixed(1)}%
-                  </span>{" "}
-                  of your life.
-                </p>
-              </div>
-              <Progress value={percentageLived} className="h-3" />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>0% Complete</span>
-                <span>{(100 - percentageLived).toFixed(1)}% Remaining</span>
               </div>
             </div>
           </CardContent>
